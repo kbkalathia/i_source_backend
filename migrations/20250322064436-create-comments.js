@@ -1,50 +1,41 @@
 "use strict";
 
-const { DataTypes } = require("sequelize");
-
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
-  async up(queryInterface) {
+  async up(queryInterface, Sequelize) {
     const transaction = await queryInterface.sequelize.transaction();
     try {
       await queryInterface.createTable(
-        "Blogs",
+        "Comments",
         {
           id: {
             allowNull: false,
             autoIncrement: true,
             primaryKey: true,
-            type: DataTypes.INTEGER,
+            type: Sequelize.INTEGER,
           },
-          title: {
-            type: DataTypes.STRING,
+          blog_id: {
+            type: Sequelize.INTEGER,
             allowNull: false,
+            references: {
+              model: "Blogs", // Table name, not model name
+              key: "id",
+            },
+            onDelete: "CASCADE",
           },
-          short_description: {
-            type: DataTypes.TEXT,
+          content: {
+            type: Sequelize.TEXT,
             allowNull: false,
-          },
-          description: {
-            type: DataTypes.TEXT,
-            allowNull: false,
-          },
-          author: {
-            type: DataTypes.STRING,
-            allowNull: false,
-          },
-          blogImage: {
-            type: DataTypes.STRING,
-            allowNull: true,
           },
           createdAt: {
+            type: Sequelize.DATE,
             allowNull: false,
-            type: DataTypes.DATE,
-            defaultValue: DataTypes.NOW,
+            defaultValue: Sequelize.NOW,
           },
           updatedAt: {
+            type: Sequelize.DATE,
             allowNull: false,
-            type: DataTypes.DATE,
-            defaultValue: DataTypes.NOW,
+            defaultValue: Sequelize.NOW,
           },
         },
         { transaction }
@@ -60,7 +51,7 @@ module.exports = {
   async down(queryInterface) {
     const transaction = await queryInterface.sequelize.transaction();
     try {
-      await queryInterface.dropTable("Blogs", { transaction });
+      await queryInterface.dropTable("Comments", { transaction });
       await transaction.commit();
     } catch (error) {
       await transaction.rollback();

@@ -5,8 +5,9 @@ export const fetchBlogs = async (req: any, res: any) => {
   try {
     const page = parseInt(req.query.page as string) || 1;
     const limit = parseInt(req.query.limit as string) || 10;
+    const searchQuery = req.query.search || null;
 
-    const data = await BlogService.getAllBlogs(page, limit);
+    const data = await BlogService.getAllBlogs(page, limit, searchQuery);
     res.status(HttpStatusCode.Ok).json(data);
   } catch (error) {
     res
@@ -36,30 +37,6 @@ export const fetchBlogById = async (req: any, res: any) => {
     res
       .status(HttpStatusCode.InternalServerError)
       .json({ error: "Error fetching blog: " + error });
-  }
-};
-
-export const searchBlog = async (req: any, res: any) => {
-  try {
-    const { query, page = "1", limit = "10" } = req.query;
-
-    if (!query) {
-      return res
-        .status(HttpStatusCode.BadRequest)
-        .json({ error: "Search query is required." });
-    }
-
-    const blogs = await BlogService.searchBlogs(
-      query,
-      parseInt(page as string),
-      parseInt(limit as string)
-    );
-
-    return res.status(HttpStatusCode.Ok).json(blogs);
-  } catch (error: any) {
-    return res
-      .status(HttpStatusCode.InternalServerError)
-      .json({ error: error.message });
   }
 };
 
