@@ -3,7 +3,7 @@ import sequelize from "../config/database";
 import CommentsModel from "./comments.model";
 
 const BlogsModel = sequelize.define(
-  "Blog",
+  "Blogs",
   {
     id: {
       type: DataTypes.INTEGER,
@@ -28,7 +28,7 @@ const BlogsModel = sequelize.define(
     },
     blogImage: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull: true,
     },
   },
   {

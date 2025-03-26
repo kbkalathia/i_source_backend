@@ -1,9 +1,8 @@
 import { DataTypes } from "sequelize";
 import sequelize from "../config/database";
-import BlogsModel from "./blogs.model";
 
 const CommentsModel = sequelize.define(
-  "Comment",
+  "Comments",
   {
     id: {
       type: DataTypes.INTEGER,

@@ -1,8 +1,8 @@
 import express from "express";
 import bodyParser from "body-parser";
 import cors from "cors";
-import * as BlogsController from "./controllers/blogs.controller";
-import * as CommentsController from "./controllers/comments.controller";
+import BlogsController from "./controllers/blogs.controller";
+import CommentsController from "./controllers/comments.controller";
 
 const app = express();
 
@@ -18,7 +18,7 @@ app.post("/api/create-blog", BlogsController.createBlog);
 app.put("/api/update-blog/:id", BlogsController.updateBlog);
 app.delete("/api/delete-blog/:id", BlogsController.deleteBlog);
 
-// Blog Comments
+// Comments
 app.get("/api/comments/:blogId", CommentsController.fetchComments);
 app.get(
   "/api/comments/commentDetails/:commentId",

@@ -1,11 +1,19 @@
-import { Sequelize } from "sequelize";
+import { Sequelize, Dialect } from "sequelize";
+import dotenv from "dotenv";
 
-const sequelize = new Sequelize("i_source", "postgres", "root", {
-  host: "localhost",
-  dialect: "postgres",
-  port: 5432,
-  logging: false,
-});
+dotenv.config({ path: ".env.local" });
+
+const sequelize = new Sequelize(
+  process.env.DATABASE as string,
+  process.env.DATABASE_USERNAME as string,
+  process.env.DATABASE_PASSWORD as string,
+  {
+    host: process.env.DATABASE_HOST as string,
+    dialect: process.env.DIALECT as Dialect,
+    port: 5432,
+    logging: false,
+  }
+);
 
 (async () => {
   try {

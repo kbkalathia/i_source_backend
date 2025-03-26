@@ -1,76 +1,164 @@
 import { HttpStatusCode } from "axios";
-import * as CommentService from "../services/comments.service";
 import { AddCommentsPayload } from "../interfaces/comments.interface";
+import CommentService from "../services/comments.service";
+import { Messages } from "../utils/messages";
+import { SendResponse } from "../utils/helpers";
 
-export const fetchComments = async (req: any, res: any) => {
-  try {
-    const blogId = parseInt(req.params.blogId);
+class CommentControllerClass {
+  async fetchComments(req: any, res: any) {
+    try {
+      const blogId = parseInt(req.params.blogId);
+      if (!blogId) {
+        return SendResponse({
+          res,
+          status: HttpStatusCode.BadRequest,
+          message: Messages.Blogs.INVALID_ID,
+        });
+      }
 
-    const data = await CommentService.getCommentsForBlog(blogId);
-    res.status(HttpStatusCode.Ok).json(data);
-  } catch (error) {
-    res
-      .status(HttpStatusCode.InternalServerError)
-      .json({ error: "Error fetching comments: " + error });
+      const comments = await CommentService.getCommentsForBlog(blogId);
+
+      return SendResponse({
+        res,
+        status: HttpStatusCode.Ok,
+        message: Messages.Comments.LIST,
+        data: comments,
+      });
+    } catch (error: any) {
+      return SendResponse({
+        res,
+        status: HttpStatusCode.InternalServerError,
+        message: "Error fetching comments list: " + error.message,
+      });
+    }
   }
-};
+  
+  async fetchCommentDetails(req: any, res: any) {
+    try {
+      const commentId = parseInt(req.params.commentId);
+      if (!commentId) {
+        return SendResponse({
+          res,
+          status: HttpStatusCode.BadRequest,
+          message: Messages.Comments.INVALID_ID,
+        });
+      }
 
-export const fetchCommentDetails = async (req: any, res: any) => {
-  try {
-    const commentId = parseInt(req.params.commentId);
+      const comment = await CommentService.getCommentDetails(commentId);
+      if (!comment) {
+        return SendResponse({
+          res,
+          status: HttpStatusCode.NotFound,
+          message: Messages.Comments.NOT_FOUND,
+        });
+      }
 
-    const data = await CommentService.getCommentDetails(commentId);
-    res.status(HttpStatusCode.Ok).json(data);
-  } catch (error) {
-    res
-      .status(HttpStatusCode.InternalServerError)
-      .json({ error: "Error fetching comment details: " + error });
+      return SendResponse({
+        res,
+        status: HttpStatusCode.Ok,
+        message: Messages.Comments.DETAILS,
+        data: comment,
+      });
+    } catch (error: any) {
+      return SendResponse({
+        res,
+        status: HttpStatusCode.InternalServerError,
+        message: "Error fetching comment details: " + error.message,
+      });
+    }
   }
-};
 
-export const addComment = async (req: any, res: any) => {
-  try {
-    const blogId = parseInt(req.params.blogId);
-    const commentsPayload: AddCommentsPayload = req.body;
+  async addComment(req: any, res: any) {
+    try {
+      const blogId = parseInt(req.params.blogId);
+      if (!blogId) {
+        return SendResponse({
+          res,
+          status: HttpStatusCode.BadRequest,
+          message: Messages.Blogs.INVALID_ID,
+        });
+      }
 
-    const data = await CommentService.addCommentForBlog(
-      blogId,
-      commentsPayload
-    );
-    res.status(HttpStatusCode.Ok).json(data);
-  } catch (error) {
-    res
-      .status(HttpStatusCode.InternalServerError)
-      .json({ error: "Error adding comment: " + error });
+      const commentsPayload: AddCommentsPayload = req.body;
+      commentsPayload.blog_id = blogId;
+
+      const data = await CommentService.addCommentForBlog(commentsPayload);
+
+      return SendResponse({
+        res,
+        status: HttpStatusCode.Ok,
+        message: Messages.Comments.CREATE_SUCCESS,
+        data,
+      });
+    } catch (error: any) {
+      return SendResponse({
+        res,
+        status: HttpStatusCode.InternalServerError,
+        message: "Error adding comment: " + error.message,
+      });
+    }
   }
-};
 
-export const editComment = async (req: any, res: any) => {
-  try {
-    const commentId = parseInt(req.params.commentId);
-    const commentsPayload: AddCommentsPayload = req.body;
+  async editComment(req: any, res: any) {
+    try {
+      const commentId = parseInt(req.params.commentId);
+      if (!commentId) {
+        return SendResponse({
+          res,
+          status: HttpStatusCode.BadRequest,
+          message: Messages.Comments.INVALID_ID,
+        });
+      }
 
-    const data = await CommentService.editCommentForBlog(
-      commentId,
-      commentsPayload
-    );
-    res.status(HttpStatusCode.Ok).json(data);
-  } catch (error) {
-    res
-      .status(HttpStatusCode.InternalServerError)
-      .json({ error: "Error editing comment: " + error });
+      const commentsPayload: AddCommentsPayload = req.body;
+
+      const data = await CommentService.editCommentForBlog(
+        commentId,
+        commentsPayload
+      );
+
+      return SendResponse({
+        res,
+        status: HttpStatusCode.Ok,
+        message: Messages.Comments.UPDATE_SUCCESS,
+        data,
+      });
+    } catch (error: any) {
+      return SendResponse({
+        res,
+        status: HttpStatusCode.InternalServerError,
+        message: "Error editing comment: " + error.message,
+      });
+    }
   }
-};
 
-export const deleteComment = async (req: any, res: any) => {
-  try {
-    const commentId = parseInt(req.params.commentId);
+  async deleteComment(req: any, res: any) {
+    try {
+      const commentId = parseInt(req.params.commentId);
+      if (!commentId) {
+        return SendResponse({
+          res,
+          status: HttpStatusCode.BadRequest,
+          message: Messages.Comments.INVALID_ID,
+        });
+      }
 
-    const data = await CommentService.deleteCommentFromBlog(commentId);
-    res.status(HttpStatusCode.Ok).json(data);
-  } catch (error) {
-    res
-      .status(HttpStatusCode.InternalServerError)
-      .json({ error: "Error deleting comment: " + error });
+      await CommentService.deleteCommentFromBlog(commentId);
+
+      return SendResponse({
+        res,
+        status: HttpStatusCode.Ok,
+        message: Messages.Comments.DELETE_SUCCESS,
+      });
+    } catch (error: any) {
+      return SendResponse({
+        res,
+        status: HttpStatusCode.InternalServerError,
+        message: "Error deleting comment: " + error.message,
+      });
+    }
   }
-};
+}
+
+const CommentsController = new CommentControllerClass();
+export default CommentsController;

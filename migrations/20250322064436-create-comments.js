@@ -18,7 +18,7 @@ module.exports = {
             type: Sequelize.INTEGER,
             allowNull: false,
             references: {
-              model: "Blogs", // Table name, not model name
+              model: "Blogs",
               key: "id",
             },
             onDelete: "CASCADE",
