@@ -1,0 +1,50 @@
+version: "3.9"
+
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+
+    container_name: Blog-Backend-Container
+
+    ports:
+      - "5000:5000"
+
+    depends_on:
+      - db
+
+    environment:
+      - NODE_ENV=development
+      - DATABASE=i_source
+      - DATABASE_USERNAME=postgres
+      - DATABASE_PASSWORD=Sit@321#
+      - DATABASE_HOST=host.docker.internal # for local Database
+      - DIALECT=postgres
+
+    volumes:
+      - .:/app # detect changes
+      - /app/node_modules # keep node_modules untouched
+
+    command: npm run dev  
+
+  db:
+    image: postgres:16
+
+    container_name: Blog-Database-Container
+
+    restart: always
+
+    ports:
+      - "5432:5432"
+
+    environment:
+      POSTGRES_DB: i_source
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: Sit@321#
+
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+  pgdata:

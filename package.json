@@ -9,7 +9,13 @@
     "create:migration": "npx sequelize-cli migration:generate --name",
     "db:migrate": "npx sequelize-cli db:migrate",
     "build": "esbuild index.ts --bundle --outfile=dist/index.js --platform=node --target=node14",
-    "start": "node dist/index"
+    "prestart": "npm run db:migrate",
+    "start": "node dist/index",
+    "docker-build": "docker-compose build",
+    "docker-compose-up": "docker-compose up",
+    "docker-compose-down": "docker-compose down",
+    "docker-rebuild": "npm run docker-compose-down && npm run docker-build && npm run docker-compose-up",
+    "docker-restart": "npm run docker-compose-down && npm run docker-compose-up"
   },
   "keywords": [],
   "author": "",
